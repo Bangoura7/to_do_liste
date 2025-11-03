@@ -1,0 +1,319 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+header {
+  background-color: #333;
+  padding: 1rem;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+nav button {
+  padding: 0.5rem 1.5rem;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+nav button:hover {
+  background-color: #777;
+  transform: translateY(-2px);
+}
+
+nav button.active {
+  background-color: #e74c3c;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+}
+
+#content {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.home-page {
+  text-align: center;
+}
+
+.home-page h1 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.tagline {
+  font-size: 1.3rem;
+  font-style: italic;
+  color: #666;
+  margin: 1.5rem 0;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #444;
+  margin: 1.5rem 0;
+  line-height: 1.8;
+}
+
+.hours {
+  background-color: #f4f4f4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Styles pour la page Menu */
+.menu-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.menu-page h1 {
+  text-align: center;
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.menu-subtitle {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.menu-section {
+  margin: 3rem 0;
+}
+
+.menu-section h2 {
+  color: #e74c3c;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e74c3c;
+  padding-bottom: 0.5rem;
+}
+
+.menu-items {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.menu-item {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.menu-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.menu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.menu-item h3 {
+  color: #333;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.menu-item .price {
+  color: #e74c3c;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.menu-item p {
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Styles pour la page Contact */
+.contact-page {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.contact-page h1 {
+  text-align: center;
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.contact-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.contact-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.contact-section {
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.contact-section h3 {
+  color: #e74c3c;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.contact-section p {
+  color: #555;
+  margin: 0.5rem 0;
+}
+
+.reservation-form {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #e74c3c;
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Styles pour la page À propos */
+.about-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-page h1 {
+  text-align: center;
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.about-image {
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  border-radius: 10px;
+  margin: 2rem auto;
+  display: block;
+}
+
+.about-section {
+  margin: 2.5rem 0;
+}
+
+.about-section h2 {
+  color: #e74c3c;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.about-section p {
+  color: #555;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.values-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.values-list li {
+  color: #555;
+  font-size: 1.1rem;
+  padding: 0.8rem 0;
+  padding-left: 2rem;
+  position: relative;
+}
+
+.values-list li::before {
+  content: "✓";
+  color: #e74c3c;
+  font-weight: bold;
+  font-size: 1.3rem;
+  position: absolute;
+  left: 0;
+}
