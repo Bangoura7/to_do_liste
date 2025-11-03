@@ -6,118 +6,135 @@
     <title>Gestionnaire de Tâches</title>
 </head>
 <body>
-    <div class="app-container">
+    <div id="app">
         <!-- Sidebar pour les projets -->
-        <aside class="sidebar">
+        <aside id="sidebar">
             <div class="sidebar-header">
-                <h2>📋 Projets</h2>
-                <button id="addProjectBtn" class="btn-icon" title="Ajouter un projet">+</button>
+                <h1>✨ Mes Tâches</h1>
+                <p>Organisez votre travail</p>
             </div>
-            <ul id="projectsList" class="projects-list"></ul>
+
+            <!-- Section Projets -->
+            <div class="projects-section">
+                <div class="section-header">
+                    <h3 class="section-title">Projets</h3>
+                    <button id="addProjectBtn" class="add-project-btn" title="Ajouter un projet">+</button>
+                </div>
+                <div id="projectsList"></div>
+            </div>
+
+            <!-- Section Filtres -->
+            <div class="filters-section">
+                <div class="section-header">
+                    <h3 class="section-title">Filtres</h3>
+                </div>
+                <div id="filters">
+                    <button class="filter-btn active" data-filter="all">Toutes</button>
+                    <button class="filter-btn" data-filter="active">Actives</button>
+                    <button class="filter-btn" data-filter="completed">Terminées</button>
+                    <button class="filter-btn" data-filter="today">Aujourd'hui</button>
+                    <button class="filter-btn" data-filter="upcoming">À venir</button>
+                    <button class="filter-btn" data-filter="overdue">En retard</button>
+                </div>
+            </div>
+
+            <!-- Section Recherche -->
+            <div class="search-section">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher..." class="search-input">
+            </div>
+
+            <!-- Statistiques -->
+            <div id="statsContainer"></div>
         </aside>
 
         <!-- Contenu principal -->
-        <main class="main-content">
-            <!-- En-tête du projet -->
-            <header class="project-header">
-                <div class="header-left">
-                    <h1 id="projectTitle">Mon Projet</h1>
-                    <div id="statsContainer" class="stats-inline"></div>
-                </div>
-                <div class="header-actions">
-                    <div class="search-container">
-                        <input type="text" id="searchInput" placeholder="🔍 Rechercher..." class="search-input">
-                    </div>
-                    <button id="addTodoBtn" class="btn-primary">+ Nouvelle Tâche</button>
-                    <button id="deleteProjectBtn" class="btn-danger-icon" title="Supprimer le projet">🗑️</button>
-                </div>
+        <main id="main-content">
+            <!-- En-tête -->
+            <header class="content-header">
+                <h1 id="projectTitle">Mon Projet</h1>
+                <button id="addTodoBtn">+ Nouvelle Tâche</button>
             </header>
 
-            <!-- Filtres -->
-            <div class="filters">
-                <button class="filter-btn active" data-filter="all">📋 Toutes</button>
-                <button class="filter-btn" data-filter="active">⏳ Actives</button>
-                <button class="filter-btn" data-filter="completed">✅ Terminées</button>
-                <button class="filter-btn" data-filter="today">📅 Aujourd'hui</button>
-                <button class="filter-btn" data-filter="upcoming">📆 À venir</button>
-                <button class="filter-btn" data-filter="overdue">⚠️ En retard</button>
-            </div>
-
             <!-- Liste des tâches -->
-            <div id="todosList" class="todos-list"></div>
+            <div id="todosList"></div>
         </main>
     </div>
 
     <!-- Modal pour ajouter/modifier un projet -->
-    <div id="projectModal" class="modal hidden">
+    <div id="projectModal" class="modal">
         <div class="modal-content">
-            <h3 id="projectModalTitle">Nouveau Projet</h3>
-            <input type="text" id="projectNameInput" placeholder="Nom du projet" class="input-field">
-            <div class="modal-actions">
-                <button id="saveProjectBtn" class="btn-primary">Enregistrer</button>
-                <button id="cancelProjectBtn" class="btn-secondary">Annuler</button>
+            <div class="modal-header">
+                <h3 class="modal-title" id="projectModalTitle">Nouveau Projet</h3>
+                <button class="close-modal" id="cancelProjectBtn">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="projectNameInput">Nom du projet</label>
+                <input type="text" id="projectNameInput" placeholder="Nom du projet" class="form-input">
+            </div>
+            <div class="form-actions">
+                <button id="saveProjectBtn" class="btn btn-primary">Enregistrer</button>
             </div>
         </div>
     </div>
 
     <!-- Modal pour ajouter/modifier une tâche -->
-    <div id="todoModal" class="modal hidden">
-        <div class="modal-content modal-large">
-            <h3 id="todoModalTitle">Nouvelle Tâche</h3>
+    <div id="todoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="todoModalTitle">Nouvelle Tâche</h3>
+                <button class="close-modal" id="cancelTodoBtn">×</button>
+            </div>
             
             <div class="form-group">
-                <label for="todoTitle">Titre *</label>
-                <input type="text" id="todoTitle" placeholder="Titre de la tâche" class="input-field" required>
+                <label class="form-label" for="todoTitle">Titre</label>
+                <input type="text" id="todoTitle" placeholder="Titre de la tâche" class="form-input" required>
             </div>
 
             <div class="form-group">
-                <label for="todoDescription">Description *</label>
-                <textarea id="todoDescription" placeholder="Description de la tâche" class="textarea-field" rows="3" required></textarea>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="todoDueDate">Date d'échéance *</label>
-                    <input type="date" id="todoDueDate" class="input-field" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="todoPriority">Priorité</label>
-                    <select id="todoPriority" class="input-field">
-                        <option value="low">Basse</option>
-                        <option value="medium" selected>Moyenne</option>
-                        <option value="high">Haute</option>
-                    </select>
-                </div>
+                <label class="form-label" for="todoDescription">Description</label>
+                <textarea id="todoDescription" placeholder="Description de la tâche" class="form-textarea" rows="3" required></textarea>
             </div>
 
             <div class="form-group">
-                <label for="todoNotes">Notes</label>
-                <textarea id="todoNotes" placeholder="Notes supplémentaires..." class="textarea-field" rows="3"></textarea>
+                <label class="form-label" for="todoDueDate">Date d'échéance</label>
+                <input type="date" id="todoDueDate" class="form-input" required>
             </div>
 
             <div class="form-group">
-                <label>Checklist</label>
-                <div class="checklist-input">
-                    <input type="text" id="checklistInput" placeholder="Ajouter un élément à la checklist" class="input-field">
-                    <button id="addChecklistBtn" class="btn-secondary">Ajouter</button>
-                </div>
-                <ul id="checklistItems" class="checklist-items"></ul>
+                <label class="form-label" for="todoPriority">Priorité</label>
+                <select id="todoPriority" class="form-select">
+                    <option value="low">Basse</option>
+                    <option value="medium" selected>Moyenne</option>
+                    <option value="high">Haute</option>
+                </select>
             </div>
 
-            <div class="modal-actions">
-                <button id="saveTodoBtn" class="btn-primary">Enregistrer</button>
-                <button id="cancelTodoBtn" class="btn-secondary">Annuler</button>
+            <div class="form-group">
+                <label class="form-label" for="todoNotes">Notes</label>
+                <textarea id="todoNotes" placeholder="Notes supplémentaires..." class="form-textarea" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Checklist</label>
+                <div class="checklist-input-group">
+                    <input type="text" id="checklistInput" placeholder="Ajouter un élément" class="form-input">
+                    <button id="addChecklistBtn" class="add-checklist-item">+</button>
+                </div>
+                <div id="checklistItems" class="modal-checklist-items"></div>
+            </div>
+
+            <div class="form-actions">
+                <button id="saveTodoBtn" class="btn btn-primary">Enregistrer</button>
             </div>
         </div>
     </div>
 
     <!-- Modal pour voir les détails d'une tâche -->
-    <div id="todoDetailsModal" class="modal hidden">
-        <div class="modal-content modal-large">
+    <div id="todoDetailsModal" class="modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3 id="detailsTitle"></h3>
-                <button id="closeDetailsBtn" class="btn-close">×</button>
+                <h3 class="modal-title" id="detailsTitle">Détails</h3>
+                <button class="close-modal" id="closeDetailsBtn">×</button>
             </div>
             <div id="todoDetailsContent"></div>
         </div>

@@ -21,7 +21,6 @@ export class UIManager {
         this.elements.projectsList = document.getElementById('projectsList');
         this.elements.projectTitle = document.getElementById('projectTitle');
         this.elements.addProjectBtn = document.getElementById('addProjectBtn');
-        this.elements.deleteProjectBtn = document.getElementById('deleteProjectBtn');
         
         // Todos
         this.elements.todosList = document.getElementById('todosList');
@@ -65,7 +64,6 @@ export class UIManager {
         this.elements.addProjectBtn.addEventListener('click', () => this.openProjectModal());
         this.elements.saveProjectBtn.addEventListener('click', () => this.saveProject());
         this.elements.cancelProjectBtn.addEventListener('click', () => this.closeProjectModal());
-        this.elements.deleteProjectBtn.addEventListener('click', () => this.deleteCurrentProject());
         
         // Todos
         this.elements.addTodoBtn.addEventListener('click', () => this.openTodoModal());
@@ -127,31 +125,34 @@ export class UIManager {
     }
 
     createProjectElement(project) {
-        const li = document.createElement('li');
-        li.className = 'project-item';
+        const div = document.createElement('div');
+        div.className = 'project-item';
         if (project.id === this.app.currentProjectId) {
-            li.classList.add('active');
+            div.classList.add('active');
         }
         
         const stats = this.app.getAllProjectsStats().find(s => s.projectId === project.id);
         
-        li.innerHTML = `
+        div.innerHTML = `
             <span class="project-name">${this.escapeHtml(project.name)}</span>
             <span class="project-count">${stats.active}</span>
-            <button class="project-item-delete" data-id="${project.id}" title="Supprimer">×</button>
+            ${project.id !== 'default' ? `<button class="delete-project-btn" data-id="${project.id}" title="Supprimer">×</button>` : ''}
         `;
         
-        li.querySelector('.project-name').addEventListener('click', () => {
+        div.querySelector('.project-name').addEventListener('click', () => {
             this.app.setCurrentProject(project.id);
             this.render();
         });
         
-        li.querySelector('.project-item-delete').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.deleteProject(project.id);
-        });
+        const deleteBtn = div.querySelector('.delete-project-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteProject(project.id);
+            });
+        }
         
-        return li;
+        return div;
     }
 
     updateProjectTitle() {
@@ -178,7 +179,7 @@ export class UIManager {
 
     createTodoCard(todo) {
         const card = document.createElement('div');
-        card.className = `todo-card priority-${todo.priority}`;
+        card.className = 'todo-card';
         if (todo.completed) card.classList.add('completed');
         
         const dueDate = new Date(todo.dueDate);
@@ -190,50 +191,57 @@ export class UIManager {
         
         card.innerHTML = `
             <div class="todo-header">
-                <div class="todo-title-section">
-                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                <div class="todo-checkbox ${todo.completed ? 'checked' : ''}" data-id="${todo.id}"></div>
+                <div class="todo-main">
                     <h3 class="todo-title">${this.escapeHtml(todo.title)}</h3>
-                </div>
-                <div class="todo-actions">
-                    <button class="btn-small btn-view" title="Voir les détails">👁️</button>
-                    <button class="btn-small btn-edit" title="Modifier">✏️</button>
-                    <button class="btn-small btn-delete" title="Supprimer">🗑️</button>
+                    <p class="todo-description">${this.escapeHtml(this.truncate(todo.description, 150))}</p>
+                    <div class="todo-meta">
+                        <span class="todo-badge priority-badge ${todo.priority}">
+                            ${this.getPriorityText(todo.priority)}
+                        </span>
+                        <span class="todo-badge date-badge ${isOverdue ? 'overdue' : ''} ${isDueToday ? 'today' : ''}">
+                            📅 ${formattedDate}
+                        </span>
+                        ${checklistProgress.total > 0 ? `
+                            <span class="todo-badge">
+                                ✓ ${checklistProgress.completed}/${checklistProgress.total}
+                            </span>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
-            <p class="todo-description">${this.escapeHtml(this.truncate(todo.description, 100))}</p>
-            <div class="todo-meta">
-                <span class="todo-meta-item ${isOverdue ? 'overdue' : ''} ${isDueToday ? 'today' : ''}">
-                    📅 ${formattedDate}
-                    ${isOverdue ? '<span class="badge-overdue">En retard</span>' : ''}
-                    ${isDueToday ? '<span class="badge-today">Aujourd\'hui</span>' : ''}
-                </span>
-                <span class="todo-meta-item date-relative">⏱️ ${relativeDate}</span>
-                <span class="priority-badge priority-${todo.priority}">${this.getPriorityText(todo.priority)}</span>
-                ${checklistProgress.total > 0 ? `
-                    <span class="todo-meta-item">
-                        ✓ ${checklistProgress.completed}/${checklistProgress.total}
-                        <span class="progress-bar">
-                            <span class="progress-fill" style="width: ${checklistProgress.percentage}%"></span>
-                        </span>
-                    </span>
-                ` : ''}
+            ${checklistProgress.total > 0 ? `
+                <div class="checklist-section">
+                    <div class="checklist-header">
+                        <span class="checklist-title">Checklist</span>
+                        <span class="checklist-progress">${checklistProgress.completed}/${checklistProgress.total}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${checklistProgress.percentage}%"></div>
+                    </div>
+                </div>
+            ` : ''}
+            <div class="todo-actions">
+                <button class="todo-action-btn view" data-id="${todo.id}">👁️ Voir</button>
+                <button class="todo-action-btn edit" data-id="${todo.id}">✏️ Modifier</button>
+                <button class="todo-action-btn delete" data-id="${todo.id}">🗑️ Supprimer</button>
             </div>
         `;
         
         // Événements
-        card.querySelector('.todo-checkbox').addEventListener('change', () => {
+        card.querySelector('.todo-checkbox').addEventListener('click', () => {
             this.toggleTodoComplete(todo.id);
         });
         
-        card.querySelector('.btn-view').addEventListener('click', () => {
+        card.querySelector('.view').addEventListener('click', () => {
             this.showTodoDetails(todo);
         });
         
-        card.querySelector('.btn-edit').addEventListener('click', () => {
+        card.querySelector('.edit').addEventListener('click', () => {
             this.openTodoModalForEdit(todo);
         });
         
-        card.querySelector('.btn-delete').addEventListener('click', () => {
+        card.querySelector('.delete').addEventListener('click', () => {
             this.deleteTodo(todo.id);
         });
         
@@ -289,12 +297,12 @@ export class UIManager {
 
     openProjectModal() {
         this.elements.projectNameInput.value = '';
-        this.elements.projectModal.classList.remove('hidden');
+        this.elements.projectModal.classList.add('active');
         this.elements.projectNameInput.focus();
     }
 
     closeProjectModal() {
-        this.elements.projectModal.classList.add('hidden');
+        this.elements.projectModal.classList.remove('active');
     }
 
     saveProject() {
@@ -332,7 +340,7 @@ export class UIManager {
         this.tempChecklist = [];
         this.clearTodoForm();
         document.getElementById('todoModalTitle').textContent = 'Nouvelle Tâche';
-        this.elements.todoModal.classList.remove('hidden');
+        this.elements.todoModal.classList.add('active');
         this.elements.todoTitle.focus();
     }
 
@@ -349,11 +357,11 @@ export class UIManager {
         this.renderChecklistItems();
         
         document.getElementById('todoModalTitle').textContent = 'Modifier la Tâche';
-        this.elements.todoModal.classList.remove('hidden');
+        this.elements.todoModal.classList.add('active');
     }
 
     closeTodoModal() {
-        this.elements.todoModal.classList.add('hidden');
+        this.elements.todoModal.classList.remove('active');
         this.clearTodoForm();
     }
 
@@ -425,24 +433,19 @@ export class UIManager {
         this.elements.checklistItems.innerHTML = '';
         
         this.tempChecklist.forEach(item => {
-            const li = document.createElement('li');
-            li.className = 'checklist-item';
-            li.innerHTML = `
-                <input type="checkbox" ${item.completed ? 'checked' : ''}>
+            const div = document.createElement('div');
+            div.className = 'modal-checklist-item';
+            div.innerHTML = `
                 <span>${this.escapeHtml(item.text)}</span>
-                <button>×</button>
+                <button class="remove-checklist-item" data-id="${item.id}">×</button>
             `;
             
-            li.querySelector('input').addEventListener('change', (e) => {
-                item.completed = e.target.checked;
-            });
-            
-            li.querySelector('button').addEventListener('click', () => {
+            div.querySelector('.remove-checklist-item').addEventListener('click', () => {
                 this.tempChecklist = this.tempChecklist.filter(i => i.id !== item.id);
                 this.renderChecklistItems();
             });
             
-            this.elements.checklistItems.appendChild(li);
+            this.elements.checklistItems.appendChild(div);
         });
     }
 
@@ -526,11 +529,11 @@ export class UIManager {
             this.deleteTodo(todo.id);
         });
         
-        this.elements.todoDetailsModal.classList.remove('hidden');
+        this.elements.todoDetailsModal.classList.add('active');
     }
 
     closeTodoDetailsModal() {
-        this.elements.todoDetailsModal.classList.add('hidden');
+        this.elements.todoDetailsModal.classList.remove('active');
     }
 
     // ========== FILTRES ET RECHERCHE ==========
