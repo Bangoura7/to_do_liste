@@ -1,5 +1,7 @@
 // Module UI - Gestion de l'affichage et des interactions DOM
 // Séparé de la logique métier
+import { format, formatDistanceToNow, isToday, isPast, isFuture, isThisWeek, parseISO } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 export class UIManager {
     constructor(appLogic) {
@@ -180,7 +182,8 @@ export class UIManager {
         if (todo.completed) card.classList.add('completed');
         
         const dueDate = new Date(todo.dueDate);
-        const formattedDate = this.formatDate(dueDate);
+        const formattedDate = format(dueDate, 'EEEE d MMMM yyyy', { locale: fr });
+        const relativeDate = formatDistanceToNow(dueDate, { addSuffix: true, locale: fr });
         const isOverdue = this.isOverdue(todo);
         const isDueToday = this.isDueToday(todo);
         const checklistProgress = this.getChecklistProgress(todo);
@@ -204,6 +207,7 @@ export class UIManager {
                     ${isOverdue ? '<span class="badge-overdue">En retard</span>' : ''}
                     ${isDueToday ? '<span class="badge-today">Aujourd\'hui</span>' : ''}
                 </span>
+                <span class="todo-meta-item date-relative">⏱️ ${relativeDate}</span>
                 <span class="priority-badge priority-${todo.priority}">${this.getPriorityText(todo.priority)}</span>
                 ${checklistProgress.total > 0 ? `
                     <span class="todo-meta-item">
@@ -448,7 +452,10 @@ export class UIManager {
         this.elements.detailsTitle.textContent = todo.title;
         
         const dueDate = new Date(todo.dueDate);
-        const formattedDate = this.formatDate(dueDate);
+        const formattedDate = format(dueDate, 'EEEE d MMMM yyyy', { locale: fr });
+        const relativeDate = formatDistanceToNow(dueDate, { addSuffix: true, locale: fr });
+        const createdDate = parseISO(todo.createdAt);
+        const createdFormatted = format(createdDate, 'd MMM yyyy à HH:mm', { locale: fr });
         const checklistProgress = this.getChecklistProgress(todo);
         
         let checklistHTML = '';
@@ -480,6 +487,7 @@ export class UIManager {
                 <div class="details-section">
                     <h4>Date d'échéance</h4>
                     <p class="detail-value">📅 ${formattedDate}</p>
+                    <p class="detail-secondary">⏱️ ${relativeDate}</p>
                 </div>
                 <div class="details-section">
                     <h4>Priorité</h4>
@@ -496,6 +504,10 @@ export class UIManager {
             <div class="details-section">
                 <h4>Statut</h4>
                 <p class="detail-value">${todo.completed ? '✅ Terminée' : '⏳ En cours'}</p>
+            </div>
+            <div class="details-section">
+                <h4>Créée le</h4>
+                <p class="detail-secondary">${createdFormatted}</p>
             </div>
             <div class="details-actions">
                 <button class="btn-primary" id="editFromDetails">Modifier</button>

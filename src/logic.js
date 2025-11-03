@@ -338,19 +338,62 @@ export class AppLogic {
 
     // Persistence
     saveToStorage() {
-        const data = {
-            projects: this.projects,
-            currentProjectId: this.currentProjectId
-        };
-        localStorage.setItem('todoApp', JSON.stringify(data));
+        try {
+            const data = {
+                projects: this.projects,
+                currentProjectId: this.currentProjectId,
+                version: '1.0',
+                lastSaved: new Date().toISOString()
+            };
+            localStorage.setItem('todoApp', JSON.stringify(data));
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde dans localStorage:', error);
+            // Si le quota est dépassé, proposer de nettoyer les anciennes données
+            if (error.name === 'QuotaExceededError') {
+                alert('Espace de stockage insuffisant. Veuillez supprimer des projets ou des tâches.');
+            }
+        }
     }
 
     loadFromStorage() {
-        const data = localStorage.getItem('todoApp');
-        if (data) {
-            const parsed = JSON.parse(data);
-            this.projects = parsed.projects || [];
-            this.currentProjectId = parsed.currentProjectId || null;
+        try {
+            const data = localStorage.getItem('todoApp');
+            if (data) {
+                const parsed = JSON.parse(data);
+                
+                // Vérifier que les données sont valides
+                if (parsed && Array.isArray(parsed.projects)) {
+                    this.projects = parsed.projects || [];
+                    this.currentProjectId = parsed.currentProjectId || null;
+                    
+                    // Réhydrater les objets si nécessaire
+                    // (ajouter les méthodes qui auraient été perdues lors de la sérialisation JSON)
+                    this.projects = this.projects.map(project => {
+                        // S'assurer que chaque projet a la structure correcte
+                        return {
+                            ...project,
+                            todos: project.todos || []
+                        };
+                    });
+                    
+                    console.log(`Données chargées: ${this.projects.length} projet(s)`);
+                } else {
+                    console.warn('Format de données invalide dans localStorage');
+                    this.projects = [];
+                    this.currentProjectId = null;
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement depuis localStorage:', error);
+            // Ne pas planter l'application si le localStorage est corrompu
+            this.projects = [];
+            this.currentProjectId = null;
+            // Optionnel: nettoyer le localStorage corrompu
+            try {
+                localStorage.removeItem('todoApp');
+            } catch (e) {
+                console.error('Impossible de nettoyer le localStorage:', e);
+            }
         }
     }
 
@@ -365,5 +408,42 @@ export class AppLogic {
             todo.description.toLowerCase().includes(lowerQuery) ||
             (todo.notes && todo.notes.toLowerCase().includes(lowerQuery))
         );
+    }
+
+    // Export/Import pour backup
+    exportData() {
+        return JSON.stringify({
+            projects: this.projects,
+            currentProjectId: this.currentProjectId,
+            exportedAt: new Date().toISOString(),
+            version: '1.0'
+        }, null, 2);
+    }
+
+    importData(jsonString) {
+        try {
+            const data = JSON.parse(jsonString);
+            if (data && Array.isArray(data.projects)) {
+                this.projects = data.projects;
+                this.currentProjectId = data.currentProjectId || (data.projects[0]?.id || null);
+                this.saveToStorage();
+                return { success: true, message: 'Données importées avec succès !' };
+            }
+            return { success: false, message: 'Format de données invalide' };
+        } catch (error) {
+            return { success: false, message: 'Erreur lors de l\'importation: ' + error.message };
+        }
+    }
+
+    // Nettoyage
+    clearAllData() {
+        this.projects = [];
+        this.currentProjectId = null;
+        try {
+            localStorage.removeItem('todoApp');
+            return { success: true };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
     }
 }
