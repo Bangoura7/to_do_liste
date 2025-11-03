@@ -20,21 +20,27 @@
         <main class="main-content">
             <!-- En-tête du projet -->
             <header class="project-header">
-                <h1 id="projectTitle">Mon Projet</h1>
+                <div class="header-left">
+                    <h1 id="projectTitle">Mon Projet</h1>
+                    <div id="statsContainer" class="stats-inline"></div>
+                </div>
                 <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="🔍 Rechercher..." class="search-input">
+                    </div>
                     <button id="addTodoBtn" class="btn-primary">+ Nouvelle Tâche</button>
-                    <button id="deleteProjectBtn" class="btn-danger">🗑️ Supprimer le projet</button>
+                    <button id="deleteProjectBtn" class="btn-danger-icon" title="Supprimer le projet">🗑️</button>
                 </div>
             </header>
 
             <!-- Filtres -->
             <div class="filters">
-                <button class="filter-btn active" data-filter="all">Toutes</button>
-                <button class="filter-btn" data-filter="active">Actives</button>
-                <button class="filter-btn" data-filter="completed">Terminées</button>
-                <button class="filter-btn" data-filter="high">Priorité haute</button>
-                <button class="filter-btn" data-filter="medium">Priorité moyenne</button>
-                <button class="filter-btn" data-filter="low">Priorité basse</button>
+                <button class="filter-btn active" data-filter="all">📋 Toutes</button>
+                <button class="filter-btn" data-filter="active">⏳ Actives</button>
+                <button class="filter-btn" data-filter="completed">✅ Terminées</button>
+                <button class="filter-btn" data-filter="today">📅 Aujourd'hui</button>
+                <button class="filter-btn" data-filter="upcoming">📆 À venir</button>
+                <button class="filter-btn" data-filter="overdue">⚠️ En retard</button>
             </div>
 
             <!-- Liste des tâches -->
